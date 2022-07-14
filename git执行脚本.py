@@ -1,8 +1,7 @@
 from os import system
 """
-1. 将该文件复制到本地仓库目录下，
-2. 只需修改需要提交或者更新的文件的文件名 fileName
-3. 可以向 orderList 中添加 git 命令
+1. 将该文件复制到本地仓库目录下
+2. 可以向 orderList 中添加 git 命令
 """
 
 def init_git_config():
