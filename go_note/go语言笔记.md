@@ -1,4 +1,4 @@
-# `Golang标准库文档：
+# Golang标准库文档：
 
 ```
 https://studygolang.com/pkgdoc
@@ -31,7 +31,7 @@ func main() {
 
 ## `func Fscanf`
 
-```
+```go
 func Fscanf(r io.Reader, format string, a ...interface{}) (n int, err error)
 ```
 
@@ -39,7 +39,7 @@ func Fscanf(r io.Reader, format string, a ...interface{}) (n int, err error)
 
 ## `func Sscanf`
 
-```
+```go
 func Sscanf(str string, format string, a ...interface{}) (n int, err error)
 ```
 
@@ -47,7 +47,7 @@ func Sscanf(str string, format string, a ...interface{}) (n int, err error)
 
 ## `func Scan`
 
-```
+```go
 func Scan(a ...interface{}) (n int, err error)
 ```
 
@@ -55,7 +55,7 @@ func Scan(a ...interface{}) (n int, err error)
 
 ## `func Fscan`
 
-```
+```go
 func Fscan(r io.Reader, a ...interface{}) (n int, err error)
 ```
 
@@ -63,7 +63,7 @@ func Fscan(r io.Reader, a ...interface{}) (n int, err error)
 
 ## `func Sscan`
 
-```
+```go
 func Sscan(str string, a ...interface{}) (n int, err error)
 ```
 
@@ -104,11 +104,37 @@ func Fscanln(r io.Reader, a ...interface{}) (n int, err error)
 
 ## `func Sscanln`
 
-```
+```go
 func Sscanln(str string, a ...interface{}) (n int, err error)
 ```
 
 `Sscanln`类似`Sscan`，但会在换行时才停止扫描。最后一个条目后必须有换行或者到达结束位置。
+
+
+
+# 值类型与引用类型
+
+golang中的值类型：整型、浮点型、布尔型、`string`、数组、结构体。
+
+golang中的引用类型：`map(映射)`、指针、切片、`channel(管道)`、`interface(接口)`、`function(函数)`
+
+# 变量与常量
+
+[Go语言基础之变量和常量 | 李文周的博客 (liwenzhou.com)](https://www.liwenzhou.com/posts/Go/01_var_and_const/)
+
+
+
+# 基本数据类型
+
+[Go语言基础之基本数据类型 | 李文周的博客 (liwenzhou.com)](https://www.liwenzhou.com/posts/Go/02_datatype/)
+
+# 运算符
+
+[Go语言基础之运算符 | 李文周的博客 (liwenzhou.com)](https://www.liwenzhou.com/posts/Go/03_operators/)
+
+# 流程控制
+
+[Go语言基础之流程控制 | 李文周的博客 (liwenzhou.com)](https://www.liwenzhou.com/posts/Go/04_basic/)
 
 
 
@@ -176,7 +202,7 @@ switch score := 80; {
 }
 ```
 
-**`switch`穿透：`fallthrough`（只能穿透一层`case`）：**
+**`switch`穿透：`fallthrough`（只能穿透一层`case`，并且跳过下一层的判断）：**
 
 ```go
 var num int = 80
@@ -490,7 +516,7 @@ import "包的路径"
 
 
 
-# 函数
+# 函数（引用类型）
 
 **函数使用的注意事项：**
 
@@ -1210,25 +1236,25 @@ UnixNano时间戳=1657463960970240800
 
 ```go
 startUnix := time.Now().Unix()
-	startUnixNano := time.Now().UnixNano()
-	str := ""
-	for i := 0; i < 100000; i++ {
-		str += strconv.Itoa(i)
-	}
-	endUnix := time.Now().Unix()
-	endUnixNano := time.Now().UnixNano()
-	fmt.Printf("执行100000次字符串拼接耗费时间为 %v 秒\n", endUnix-startUnix)
-	fmt.Printf("执行100000次字符串拼接耗费时间为 %v 纳秒\n", endUnixNano-startUnixNano)
+startUnixNano := time.Now().UnixNano()
+str := ""
+for i := 0; i < 100000; i++ {
+    str += strconv.Itoa(i)
+}
+endUnix := time.Now().Unix()
+endUnixNano := time.Now().UnixNano()
+fmt.Printf("执行100000次字符串拼接耗费时间为 %v 秒\n", endUnix-startUnix)
+fmt.Printf("执行100000次字符串拼接耗费时间为 %v 纳秒\n", endUnixNano-startUnixNano)
 
 /*输出：
 执行100000次字符串拼接耗费时间为 2 秒
-执行100000次字符串拼接耗费时间为 2637625700 纳
+执行100000次字符串拼接耗费时间为 2637625700 纳秒
 */
 ```
 
 
 
-# 内置函数
+# 内存分配（new和make）
 
 ## len
 
@@ -1240,7 +1266,7 @@ n := len("hello")	// n = 5
 
 ## new
 
-用来分配内存，主要用来分配值内存，比如`int`、`float64`、`struct`等，其第一个实参为类型，而非值。其返回值为指向该类型的新分配的零值的指针：`func new(Type) *Type`
+用来分配内存，主要用来分配值内存，比如`int`、`float64`、`struct`等，其第一个实参为类型，而非值。其**返回值为指向该类型的新分配的零值的指针**：`func new(Type) *Type`
 
 ```go
 a := new(int)
@@ -1255,7 +1281,7 @@ a所指向的值的地址：0xc0000aa058
 
 ## make
 
-内建函数make分配并初始化一个类型为切片、映射、或通道的对象。其第一个实参为类型，而非值。make的返回类型与其参数相同，而非指向它的指针。`func make(Type, size ...IntegerType) Type`
+内建函数make分配并初始化一个类型为**切片、映射、通道**的对象。其第一个实参为类型，而非值。**make的返回类型与其参数相同，而非指向它的指针**。`func make(Type, size ...IntegerType) Type`
 
 ```
 切片：size指定了其长度。该切片的容量等于其长度。切片支持第二个整数实参可用来指定不同的容量；
@@ -1293,7 +1319,7 @@ slice cap(切片容量) =  5
 
 - Go语言不支持传统的`try...catch...fianlly`
 
-- Go中引入的处理方式为：`defer`、`panic`、`recover`
+- Go中引入的处理方式为：**`defer`、`panic`、`recover`**
 
 - Go语言中可以抛出一个`panic`异常，然后再`defer`中通过`recover`捕获这个异常：
 
@@ -1376,7 +1402,7 @@ Process finished with the exit code 2
 
 # 数组和切片
 
-## 数组
+## 数组（值类型）
 
 数组可以存放多个同一类型的数据。数组也是一种数据类型，在Go中，数组是**值类型**。
 
@@ -1495,7 +1521,7 @@ for index, value := range a1 {
 
 
 
-## 切片
+## 切片（引用类型）
 
 - 切片的英文是`slice`。
 
@@ -1827,7 +1853,7 @@ map[m1:齐天大圣 m2:猪八戒 m3:沙僧]
 
 ```go
 var m map[string]string
-// 在使用map前，需要先make分配内存
+// 这种方式在使用map前，需要先make分配内存，之后可自动增长
 m = make(map[string]string, 3)	// 初始分配的容量为 3，可自动增长
 m["m1"] = "孙悟空"
 m["m2"] = "猪八戒"
@@ -2681,7 +2707,7 @@ type C1 struct {
 
 
 
-## 接口（interface）
+## 接口（引用类型）
 
 
 
@@ -3458,3 +3484,2133 @@ func main() {
 
 ## 统计英文、数字、空格和其它字符数量
 
+打开一个文件，创建一个`Reader`，每读取一行，就去统计该行有多少个 英文、数字、空格和其他字符，然后将结果保存到一个结构体中。
+
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+)
+
+// 定义一个结构体，用于保存统计结果
+type CharCount struct {
+	ChCount    int // 记录英文个数
+	NumCount   int // 记录数字的个数
+	SpaceCount int // 记录空格的个数
+	OtherCount int // 记录其他字符的个数
+}
+
+func main() {
+	fileName := "D:\\DevelopmentSoftWare\\GoLand\\GoLand_Workspace\\demo\\test1.txt"
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Printf("open file err=%v\n", err)
+		return
+	}
+	defer file.Close()
+	// 定义一个CharCount实例
+	var count CharCount
+	// 创建一个Reader
+	reader := bufio.NewReader(file)
+	//开始循环的读取 fileName 的内容
+	for {
+		str, err := reader.ReadString('\n')
+		if err == io.EOF { // 读到文件末尾就退出
+			break
+		}
+		// 为了兼容中文字符，可以将str转成[]rune
+		strRune := []rune(str)
+		// 遍历 strRune，进行统计
+		for _, v := range strRune {
+			switch {
+			case v >= 'a' && v <= 'z':
+				fallthrough
+			case v >= 'A' && v <= 'Z':
+				count.ChCount++
+			case v == ' ' || v == '\t':
+				count.SpaceCount++
+			case v >= '0' && v <= '9':
+				count.NumCount++
+			default:
+				count.OtherCount++
+			}
+		}
+	}
+	fmt.Printf("字符的个数：%v\n数字的个数：%v\n空格的个数：%v\n其它字符个数：%v",
+		count.ChCount, count.NumCount, count.SpaceCount, count.OtherCount)
+}
+```
+
+
+
+# 获取命令行参数
+
+`os.Args`是一个`string`的切片，用来存储所有的命令行参数。
+
+```go
+// main.go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	fmt.Println("命令行的参数个数：", len(os.Args))
+	// 遍历os.Args切片，就可以得到所有的命令行输入参数值
+	for i, v := range os.Args {
+		fmt.Printf("args[%v]=%v\n", i, v)
+	}
+}
+```
+
+```shell
+# 终端命令行
+D:\DevelopmentSoftWare\GoLand\GoLand_Workspace\demo> go build -o test.exe main.go	# 生成一个 test.exe 文件
+D:\DevelopmentSoftWare\GoLand\GoLand_Workspace\demo> .\test.exe tom 123 D:\file\file.txt 2.5
+
+# 终端输出：
+命令行的参数个数： 5
+args[0]=D:\DevelopmentSoftWare\GoLand\GoLand_Workspace\demo\test.exe
+args[1]=tom
+args[2]=123
+args[3]=D:\file\file.txt
+args[4]=2.5
+
+```
+
+
+
+**`flag`包用来解析命令行参数**
+
+前面的方式是比较原生的方式，对解析参数不是特别方便，特别是带有指定参数形式的命令行。比如`.\test.exe -a 123 -b abc -c 2.5`这样形式的命令行，go提供了`flag`包，可以方便的解析命令行参数，而且参数顺序可以随意。
+
+该包中有一个`Parse()`方法，对于解析命令行参数非常重要：
+
+```go
+func (f *FlagSet) Parse(arguments []string) error
+/*
+从arguments中解析注册的flag。必须在所有flag都注册好而未访问其值时执行。未注册却使用flag -help时，会返回ErrHelp。
+*/
+```
+
+```go
+// main.go
+package main
+
+import (
+	"flag"
+	"fmt"
+)
+
+func main() {
+	var name string
+	var age int
+	var height float64
+
+	flag.StringVar(&name, "name", "", "姓名，默认为空")
+	flag.IntVar(&age, "age", 20, "年龄，默认为20")
+	flag.Float64Var(&height, "height", 1.70, "身高，默认1.70")
+
+	// 这里有一个非常重要的操作，转换,必须调用该方法从arguments中解析注册的flag
+	flag.Parse()
+
+	fmt.Printf("name:%v, age:%v, height:%v", name, age, height)
+}
+
+```
+
+```shell
+# 终端命令行
+D:\DevelopmentSoftWare\GoLand\GoLand_Workspace\demo> go build -o test.exe main.go	# 生成一个 test.exe 文件
+D:\DevelopmentSoftWare\GoLand\GoLand_Workspace\demo> .\test.exe .\test.exe -name tom -age 22 -height 1.75
+
+
+# 终端输出：
+name:tom, age:22, height:1.75
+```
+
+
+
+# Json
+
+## JSON基本介绍
+
+JSON（JavaScript Object Notation）是一种轻量级的数据交换格式。
+
+JSON易于机器解析和生成，并有效地提升网络传输效率，通常程序在网络传输时会先将数据（结构体、map等）**序列化**成json字符串，当接收方的得到json字符串时，再**反序列化**恢复成原来的数据类型（结构体、map等）。这种方式已然成为各个语言的标准。
+
+在JS语言中，一切都是对象。因此，任何的数据类型都可以通过JSON来表示，即任何数据类型都可以转换成json格式，如字符串、数字、对象、数组、map、结构体等。
+
+**JSON键值对**时用来保存数据的一种方式。
+
+```go
+键值对中的键名下载前面并用双引号 "" 包裹，使用冒号 : 分割，然后紧接着值
+{"name":"zhongxi", "age":22, "HeightAndWeight":[1.70,57], "color":{"clothes":"white", "pants":"blue"}}
+
+{
+    "name":"zhongxi",
+    "age":22,
+    "HeightAndWeight":[
+        1.7,
+        57
+    ],
+    "color":{
+        "clothes":"white",
+        "pants":"blue"
+    }
+}
+```
+
+
+
+https://www.json.cn/ 网站可以验证一个json格式的数据是否正确。尤其是编写比较复杂的json格式数据的时候。
+
+
+
+## 序列化
+
+json序列化是指，将有`key-value`结构的数据类型（比如结构体、map、切片）序列化成json字符串的操作。
+
+```go
+func Marshal(v interface{}) ([]byte, error)
+Marshal函数返回v的json编码。
+```
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Student struct {
+	Name     string
+	Age      int
+	Birthday string
+	Height   float64
+}
+
+func testStruct() {
+	// 对结构体序列化
+	stu := Student{
+		Name:     "张三",
+		Age:      3,
+		Birthday: "2019-1-1",
+		Height:   0.5,
+	}
+	// 将 stu 序列化
+	data, err := json.Marshal(&stu)
+	if err != nil {
+		fmt.Println("序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Printf("student序列化后=%v\n", string(data))
+}
+
+func testMap() {
+	// 将 map 进行序列化
+	// 定义一个map
+	var a map[string]interface{}
+	a = make(map[string]interface{})
+	a["name"] = "tom"
+	a["age"] = 20
+	a["gender"] = "男"
+	// 将 a 进行序列化
+	data, err := json.Marshal(a)
+	if err != nil {
+		fmt.Println("序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Printf("a 序列化后=%v\n", string(data))
+}
+
+func testSlice() {
+    // 对切片进行序列化
+	var slice []map[string]interface{}
+	var m1 = map[string]interface{}{
+		"name":   "jack",
+		"age":    22,
+		"gender": "男",
+	}
+	var m2 = map[string]interface{}{
+		"name":   "mary",
+		"age":    23,
+		"gender": "女",
+	}
+	slice = append(slice, m1, m2)
+	// 将 slice 进行序列化
+	data, err := json.Marshal(slice)
+	if err != nil {
+		fmt.Println("序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Printf("slice 序列化后=%v\n", string(data))
+}
+
+func testFloat64() {
+	// 对基本数据类型进行序列化
+	var num float64 = 23.45
+	// 将 num 进行序列化
+	data, err := json.Marshal(num)
+	if err != nil {
+		fmt.Println("序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Printf("num 序列化后=%v\n", string(data))
+}
+
+func main() {
+	testStruct()	// 对结构体进行序列化
+	testMap()	// 对 map 进行序列化
+	testSlice()	// 对切片进行序列化
+	testFloat64()	// 对基本数据类型进行序列化
+}
+/*输出：
+student序列化后={"Name":"张三","Age":3,"Birthday":"2019-1-1","Height":0.5}
+a 序列化后={"age":20,"gender":"男","name":"tom"}
+slice 序列化后=[{"age":22,"gender":"男","name":"jack"},{"age":23,"gender":"女","name":"mary"}]
+num 序列化后=23.45
+*/
+```
+
+
+
+对于结构体的序列化，如果我们希望序列化后的`key`的名字，可以给`struct`指定一个`tag`标签。
+
+```go
+type Student struct {
+	Name     string  `json:"stu_name"` // 反射机制
+	Age      int     `json:"stu_age"`
+	Birthday string  `json:"stu_birthday"`
+	Height   float64 `json:"stu_height"`
+}
+
+// 序列化后
+student序列化后={"stu_name":"张三","stu_age":3,"stu_birthday":"2019-1-1","stu_height":0.5}
+```
+
+
+
+## 反序列化
+
+json反序列化是指，将`json`字符串饭序列化成对应的数据类型（比如结构体、map、切片等）的操作。
+
+```go
+func Unmarshal(data []byte, v interface{}) error
+Unmarshal函数解析json编码的数据并将结果存入v指向的值。
+```
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Student struct {
+	Name     string
+	Age      int
+	Birthday string
+	Height   float64
+}
+
+func unmarshalStruct() {
+	// 对结构体反序列化
+	str := "{\"Name\":\"张三\",\"Age\":3,\"Birthday\":\"2019-1-1\",\"Height\":0.5}"
+	var stu Student // 定义一个Student实例
+	// 将 str 反序列化
+	err := json.Unmarshal([]byte(str), &stu)
+	if err != nil {
+		fmt.Println("反序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Println("str序列化后:", stu)
+}
+
+func unmarshalMap() {
+	// 将 map 进行反序列化
+	str := "{\"age\":20,\"gender\":\"男\",\"name\":\"tom\"}"
+	// 定义一个map
+	var a map[string]interface{}
+	// 反序列化不需要make对a进行初始化，因为make操作已经被封装到 Unmarshal 函数中
+	// 将 a 进行反序列化
+	err := json.Unmarshal([]byte(str), &a)
+	if err != nil {
+		fmt.Println("反序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Println("a序列化后:", a)
+}
+
+func unmarshalSlice() {
+	// 对切片进行反序列化
+	str := "[{\"age\":22,\"gender\":\"男\",\"name\":\"jack\"},{\"age\":23,\"gender\":\"女\",\"name\":\"mary\"}]"
+	// 定义一个slice
+	// 反序列化不需要make对slice进行初始化，因为make操作已经被封装到 Unmarshal 函数中
+	var slice []map[string]interface{}
+	// 将 slice 进行反序列化
+	err := json.Unmarshal([]byte(str), &slice)
+	if err != nil {
+		fmt.Println("反序列化错误：", err)
+	}
+	// 输出序列化后的结果
+	fmt.Println("slice序列化后:", slice)
+}
+
+func main() {
+	unmarshalStruct() //对结构体进行反序列化
+	unmarshalMap()    //对map进行反序列化
+	unmarshalSlice()  //对切片进行反序列化
+}
+/*输出：
+str序列化后: {张三 3 2019-1-1 0.5}
+a序列化后: map[age:20 gender:男 name:tom]
+slice序列化后: [map[age:22 gender:男 name:jack] map[age:23 gender:女 name:mary]]
+*/
+```
+
+- 在反序列化一个json字符串时，要确保反序列化后的数据类型和原来序列化前的数据类型一致。
+
+- 如果json字符串是通过程序获取到的，则不需要再对`"`进行转义处理。
+
+	```go
+	func unmarshalMap() {
+		// 将 map 进行反序列化
+		//str := "{\"age\":20,\"gender\":\"男\",\"name\":\"tom\"}"
+		str := testMap()	//通过程序获取的，不需要对 " 进行转义
+		//......
+	}
+	```
+
+
+
+# 单元测试
+
+[Go语言标准库文档中文版 | Go语言中文网 | Golang中文社区 | Golang中国 (studygolang.com)](https://studygolang.com/pkgdoc) - testing
+
+go语言中自带一个轻量级的测试框架`testing`和自带的`go test`命令来实现单元测试和性能测试。`testing`框架和其他语言中的测试框架类似，可以基于这个框架写针对相应函数的测试用例，也可以基于该框架写相应的压力测试用例。
+
+```go
+import "testing"
+
+testing 提供对 Go 包的自动化测试的支持。通过 'go test'命令，能够自动执行如下形式的任何函数：
+func TestXxx(t *testing.T)
+其中 Xxx 可以是任何字母数字字符串（但第一个字母不能是 [a-z]），用于识别测试例程。
+在这些函数中，使用 Error, Fail 或相关方法来发出失败信号。
+
+要编写一个新的测试套件，需要创建一个名称以 _test.go 结尾的文件，该文件包含 `TestXxx` 函数，如上所述。 将该文件放在与被测试的包相同的包中。该文件将被排除在正常的程序包之外，但在运行 “go test” 命令时将被包含。 
+```
+
+通过单元测试，可以解决如下问题：
+
+1. 确保每个函数时可运行，并且运行结果是正确的。
+2. 确保写出来的代码性能是好的。
+3. 单元测试能及时的发现程序设计或实现的逻辑错误，使问题及早暴露，便于问题的定位解决，而性能测试的重点在于发现程序设计上的一些问题，让程序能够在高并发的情况下还能保持稳定。
+
+## 基本用法
+
+使用go的单元测试，对`numSquare`进行测试：
+
+```go
+// square.go
+func NumSquare(n int) int {
+	square := n * n
+	return square
+}
+```
+
+创建一个名称以 `_test.go` 结尾的文件`square_test.go`，该文件包含 `TestNumSquare` 函数， 将该文件放在与被测试文件的包相同的包中。
+
+```go
+// square_test.go
+package main
+
+import (
+	"testing"
+)
+
+// 编写一个测试用例，去测试NumSquare是否正确
+func TestNumSquare(t *testing.T) {
+	//调用NumSquare
+	square := NumSquare(10)
+	if square != 10 {
+		t.Fatalf("NumSquare(10)执行错误，期望值=%v，实际值=%v", 100, square)
+	}
+	// 如果正确，输出日志
+	t.Logf("NumSquare(10)执行正确...")
+}
+```
+
+直接运行`square_test.go`
+
+```
+=== RUN   TestNumSquare
+    square_test.go:15: NumSquare(10)执行正确...
+--- PASS: TestNumSquare (0.00s)
+PASS
+```
+
+
+
+## 使用注意
+
+1. 测试用例文件名必须以`_test.go`结尾。
+2. 测试用例函数必须以`Test`开头，一般来说就是`Test+被测试的函数名`，比如`TestNumSquare`。
+3. `TestXxx(t *testing.T)`的形参类型必须是`*testing.T`。
+4. 一个测试用例文件中，可以有多个测试用例函数。
+5. 终端测试用例指令：
+	- `go test`，如果运行正确，无日志；运行错误，会输出日志。
+	- `go test -v`，无论运行正确还是错误，都输出日志。
+6. 当出现错误时，可以使用`t.Fatalf`来格式化输出错误信息，并退出程序。
+7. `t.Logf`方法可以输出相应的日志。
+8. **测试用例函数，并没有放在`main`函数中，但仍然能执行。**
+9. `PASS`表示测试用例运行成功，`FAIL`表示测试用例运行失败。
+10. 终端测试单个文件，一定要带上被测试的原文件:`go test -v square_test.go square.go`。
+11. 测试单个方法：`go test -v -test.run TestNumSquare`
+
+
+
+# goroutine和channel
+
+## goroutine
+
+### 进程和线程
+
+1. 进程就是程序在操作系统中的一次执行过程，是系统进行资源分配和调度的基本单位。
+2. 线程是进程的一个执行实例，是程序执行的最小单元，它是比进程更小的能独立运行的基本单位。
+3. 一个进程可以创建和销毁多个线程，同一个进程中的多个线程可以并发执行。
+4. 一个程序至少有一个进程，一个进程至少有一个线程。
+
+### 并发和并行
+
+**并发：**多线程程序在单核上运行（同一时间段内执行多个任务）。
+
+- 多个任务作用在一个CPU。
+- 从微观角度看，在一个时间点上，其实只有一个任务在执行。
+
+**并行：**多线程程序在多核上运行（同一时刻执行多个任务）。
+
+- 多个任务作用在多个CPU。
+- 从微观的角度看，在一个时间点上，就是多个任务在同时执行。
+
+
+
+### Go协程和Go主线程
+
+**go主线程**：是一个物理线程，直接作用在CPU上，是重量级的，非常耗费CPU资源。
+
+**协程**：从主线程开启的，是轻量级的线程，是逻辑态。对资源消耗相对较小。一个Go线程上，可以起多个协程，可以理解为协程是轻量级的线程（编译器做优化）。Go协程的特点：
+
+1. 有独立的栈空间。
+2. 共享程序堆空间。
+3. 调度由用户控制。
+4. 协程是轻量级的线程。
+
+协程机制是Golang的重要特点，可以轻松的开启上万个协程。而其它编程语言的并发一般基于线程的，开启过多的线程，资源耗费大。
+
+**Go语言中的操作系统线程和`goroutine`的关系：**
+
+- 一个操作系统线程对应用户态多个`goroutine`。
+- go程序可以同时使用多个操作系统线程。
+- `goroutine`和OS线程是多对多的关系，即`m:n`。
+
+
+
+
+
+**主线程和协程的运行机制：**
+
+- 如果主线程退出了，则协程即使还没有执行完毕，也会退出。
+- 协程也可以在主线程退出之前结束，比如完成了自己的任务。
+
+```
+案例：编写一个程序，完成如下功能：
+1）在主线程（可以理解成进程）中，开启一个goroutine，该协程每个一秒输出 "hello,world..."
+2）在主线程中也每个一秒输出"hello,golang..."，输出10次后，退出程序
+3）要求主线程和goroutine同时执行。
+```
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"time"
+)
+
+func test() {
+	for i := 1; i <= 10; i++ {
+		fmt.Println("test() hello,world " + strconv.Itoa(i))
+		time.Sleep(time.Second)
+	}
+}
+
+func main() {
+	go test() // 开启了一个协程
+	for i := 1; i <= 10; i++ {
+		fmt.Println("main() hello,golang " + strconv.Itoa(i))
+		time.Sleep(time.Second)
+	}
+}
+
+/*输出：
+main() hello,golang 1
+test() hello,world 1
+test() hello,world 2
+main() hello,golang 2
+main() hello,golang 3
+test() hello,world 3
+test() hello,world 4
+main() hello,golang 4
+main() hello,golang 5
+test() hello,world 5
+test() hello,world 6
+main() hello,golang 6
+main() hello,golang 7
+test() hello,world 7
+test() hello,world 8
+main() hello,golang 8
+main() hello,golang 9
+test() hello,world 9
+test() hello,world 10
+main() hello,golang 10
+*/
+```
+
+
+
+### sync.WaitGroup
+
+如果上面的`test()`中循环打印10次，而`main()`中只循环打印5次，会出现这样的结果：
+
+```go
+main() hello,golang 1
+test() hello,world 1
+test() hello,world 2
+main() hello,golang 2
+main() hello,golang 3
+test() hello,world 3
+test() hello,world 4
+main() hello,golang 4
+test() hello,world 5
+main() hello,golang 5
+```
+
+很明显，主线程结束后，协程并没有完成所有打印。
+
+**如何保证在所有的协程完成之后，主线程才结束？**
+
+```go
+package main
+
+import (
+	"fmt"
+	"strconv"
+	"sync"
+	"time"
+)
+
+var wg sync.WaitGroup
+
+func test() {
+	defer wg.Done() //test()结束时，通知计数器-1
+	for i := 1; i <= 10; i++ {
+		fmt.Println("test() hello,world " + strconv.Itoa(i))
+		time.Sleep(time.Second)
+	}
+}
+
+func main() {
+	wg.Add(1) //需要开启一个协程，则设置计数器为1
+	go test() // 开启了一个协程
+	for i := 1; i <= 5; i++ {
+		fmt.Println("main() hello,golang " + strconv.Itoa(i))
+		time.Sleep(time.Second)
+	}
+	wg.Wait() //阻塞，等所有协程结束后main才结束
+}
+/*输出：
+main() hello,golang 1
+test() hello,world 1
+main() hello,golang 2
+test() hello,world 2
+main() hello,golang 3
+test() hello,world 3
+test() hello,world 4
+main() hello,golang 4
+main() hello,golang 5
+test() hello,world 5
+test() hello,world 6
+test() hello,world 7
+test() hello,world 8
+test() hello,world 9
+test() hello,world 10
+*/
+```
+
+
+
+### MPG模式
+
+- **M**：操作系统的主线程（是物理线程）。
+- **P**：协程执行需要的上下文。
+- **G**：协程
+
+
+
+### 获取和设置Golang运行的CPU数
+
+```go
+/* NumCPU返回本地机器的逻辑CPU个数。*/
+func NumCPU() int
+
+/* GOMAXPROCS设置可同时执行的最大CPU数，并返回先前的设置。
+若 n < 1，它就不会更改当前设置。本地机器的逻辑CPU数可通过 NumCPU 查询。本函数在调度程序优化后会去掉。*/
+func GOMAXPROCS(n int) int
+
+/*
+go1.8后，默认让程序运行在多个核上，可以不用设置了
+go1.8前，仍需要设置一下，可以更高效的利用CPU
+*/
+```
+
+```go
+package main
+
+import (
+	"fmt"
+	"runtime"
+)
+
+func main() {
+	// 获取当前系统CPU的数量
+	num := runtime.NumCPU()
+	// 设置num-1个CPU运行Go程序
+	oldNum := runtime.GOMAXPROCS(num - 1)
+	fmt.Println("num=", num)	// num=12
+	fmt.Println("oldNum=", oldNum)	// oldNum=12
+}
+```
+
+
+
+### 捕获panic
+
+如果开启了一个协程，但是这个协程出现了`panic`，如果不捕获这个`panic`，就会造成整个程序崩溃。可以在`goroutine`中使用`recover`来捕获`panic`，这样即使这个协程发生问题，但主线程仍然不受影响，可以继续执行：
+
+```go
+func sayHello() {
+	time.Sleep(time.Second)
+	fmt.Println("hello,world!")
+}
+
+func test() {
+	// 这里可以使用defer + recover
+	defer func() {
+		// 捕获test抛出的panic
+		if err := recover(); err != nil {
+			fmt.Println("test()发生错误", err)
+		}
+	}()
+
+	//定义了一个map，发生 nil map error
+	var myMap map[int]string
+	myMap[0] = "golang" // error
+}
+
+func main() {
+	go sayHello()
+	go test()
+	for i := 1; i <= 10; i++ {
+		fmt.Println("main() ok=", i)
+		time.Sleep(time.Second)
+	}
+}
+```
+
+
+
+## channel（引用类型）
+
+### channel的基本介绍
+
+- `channel`本质就是一个数据结构-队列。
+- 数据是先进先出（FIFO: first in first out）。
+- `channel`本身就是线程安全的，多`goroutine`访问时，也不会发生资源竞争问题，不需要加锁。
+- `channel`有类型的，一个`string`的`channel`只能存放`string`类型数据。
+
+### 定义/声明channel
+
+```go
+var 变量名 chan 数据类型
+
+//demo：
+var intChan chan int	// intChan用于存放int数据
+var mapChan chan map[int]string //mapChan用于存放map[int]string类型数据
+var perChan chan Person
+var perChan2 chan *Person
+```
+
+- `channel`是引用类型。
+- `channel`必须初始化才能写入数据，即`make`后才能使用。
+- `channel`是由类型，只能写入相应类型的数据。
+
+
+
+### channel的初始化、写入、读取
+
+初始化：
+
+```go
+var intChan chan int
+intChan = make(chan int, 3)
+```
+
+将数据写入管道中和从管道中读取数据：
+
+```go
+intChan <- 10	// 写入
+
+var num int
+num = <-intChan	// 读取
+```
+
+案例：
+
+```go
+func main() {
+	// 创建一个可以存放 3 个int类型的管道
+	var intChan chan int
+	intChan = make(chan int, 3)
+	// 看看intChan 是什么
+	fmt.Printf("intChan的值=%v，intChan本身的地址=%p\n", intChan, &intChan)
+
+	// 向管道中写入数据，需要注意，写入数据时，不能超过其容量
+	intChan <- 10
+	num := 200
+	intChan <- num
+	intChan <- -50
+
+	// 管道的长度和cap（容量）
+	fmt.Printf("intChan len=%v, cap=%v\n", len(intChan), cap(intChan))
+	// 从管道中读取数据
+	// 在没有使用协程的情况下，如果管道中的数据已经全部取出，再取就会报告deadlock
+	var num2 int
+	num2 = <-intChan
+	fmt.Println("num2=", num2)
+	fmt.Printf("intChan len=%v, cap=%v\n", len(intChan), cap(intChan))
+}
+/*输出：
+intChan的值=0xc00010e000，intChan本身的地址=0xc000006028
+intChan len=3, cap=3
+num2= 10
+intChan len=2, cap=3
+*/
+```
+
+
+
+### 通道类型（有无缓冲区）
+
+**无缓冲区（又称同步通道）：**
+
+```go
+var ch chan int
+ch = make(chan int)
+ch <- 10  //向通道里放入数据
+fmt.Println(x)
+close(ch)
+```
+
+上面的程序会发生`deadlock`错误，由于使用`ch := make(chan int)`创建的是无缓冲的通道，无缓冲的通道只有在有接收方能够接收值的时候才能发送成功，否则会一直处于等待发送的阶段。同理，如果对一个无缓冲通道执行接收操作时，没有任何向通道中发送值的操作那么也会导致接收操作阻塞。
+
+其中一种解决无缓冲通道的死锁问题就是在将数据放入通道之前创建一个`goroutine`去接受值：
+
+```go
+func main() {
+	var ch chan int
+	ch = make(chan int)
+	var x int
+	go func(int) {
+		x = <-ch
+	}(x) //从通道里取出数据，由于没有缓冲区，如果没有接受者，则通道会发生阻塞
+	ch <- 10 //向通道里放入数据
+	fmt.Println(x)
+	close(ch)
+}
+```
+
+另一种解决上面死锁问题的方法就是使用有缓冲区的通道。
+
+
+
+**有缓冲区（又称异步通道）：**
+
+只要通道的容量大于零，那么该通道就属于有缓冲的通道，通道的容量表示通道中最大能存放的元素数量。当通道内已有元素数达到最大容量后，再向通道执行发送操作就会阻塞，除非有从通道执行接收操作。
+
+```go
+var ch chan int
+ch = make(chan int, 1)
+ch <- 10 //向通道里放入数据
+x := <-ch	// 从通道里取出数据
+fmt.Println(x)
+close(ch)
+```
+
+
+
+
+
+
+
+### channel使用注意
+
+1. `channel`中只能存放指定的数据类型。
+2. `channel`的数据放满后，就不能再放入了，再存放会报告`deadlock`。
+3. 如果从`channel`中取出数据后，可以继续放入。
+4. 在没有使用协程的情况下，如果`channel`数据取完了，再取就会报`deadlock`。
+
+### 案例演示
+
+#### `int`型`channel`：
+
+```go
+func main() {
+	// 创建一个可以存放 2 个int类型的管道
+	var intChan chan int
+	intChan = make(chan int, 2)
+
+	// 向管道中写入数据
+	intChan <- 10
+	intChan <- 20
+	//intChan <- 30 //因为intChan的容量为2，再存放会报告deadlock
+
+	// 从管道中取数据
+	num1 := <-intChan
+	num2 := <-intChan
+	//num3 := <-intChan //因为这时候intChan中已经没有数据了，再取就会报告deadlock
+
+	fmt.Printf("num1=%v  num2=%v", num1, num2)
+}
+/*输出：
+num1=10  num2=20
+*/
+```
+
+#### `map`型`channel`：
+
+```go
+func main() {
+	// 创建一个可以存放 2 个map[string]string类型的管道
+	var mapChan chan map[string]string
+	mapChan = make(chan map[string]string, 2)
+
+	m1 := map[string]string{
+		"city1": "北京",
+		"city2": "重庆",
+	}
+	m2 := map[string]string{
+		"country1": "中国",
+		"country2": "俄罗斯",
+	}
+	// 向管道中写入数据
+	mapChan <- m1
+	mapChan <- m2
+	//mapChan <- m2 //因为mapChan的容量为2，再存放会报告deadlock
+
+	// 从管道中取数据
+	m11 := <-mapChan
+	m22 := <-mapChan
+	//m33 := <-mapChan //因为这时候mapChan中已经没有数据了，再取就会报告deadlock
+
+	fmt.Printf("m11=%v  m22=%v", m11, m22)
+}
+/*输出：
+m11=map[city1:北京 city2:重庆]  m22=map[country1:中国 country2:俄罗斯]
+*/
+```
+
+#### 结构体型`channel`：
+
+```go
+type Student struct {
+	Name string
+	Age  int
+}
+
+func main() {
+	// 创建一个可以存放 2 个Student类型的管道
+	var stuChan chan Student
+	stuChan = make(chan Student, 2)
+
+	stu1 := Student{
+		Name: "tom",
+		Age:  22,
+	}
+	stu2 := Student{
+		Name: "jack",
+		Age:  25,
+	}
+	// 向管道中写入数据
+	stuChan <- stu1
+	stuChan <- stu2
+	//stuChan <- stu2 //因为stuChan的容量为2，再存放会报告deadlock
+
+	// 从管道中取数据
+	stu11 := <-stuChan
+	stu22 := <-stuChan
+	//stu33 := <-stuChan //因为这时候stuChan中已经没有数据了，再取就会报告deadlock
+
+	fmt.Printf("stu11=%v  stu22=%v", stu11, stu22)
+}
+/*输出：
+stu11={tom 22}  stu22={jack 25}
+*/
+```
+
+#### 结构体指针型`channel`：
+
+```go
+type Student struct {
+	Name string
+	Age  int
+}
+
+func main() {
+	// 创建一个可以存放 2 个 *Student 类型的管道
+	var stuPChan chan *Student
+	stuPChan = make(chan *Student, 2)
+
+	stuP1 := &Student{
+		Name: "tom",
+		Age:  22,
+	}
+	stuP2 := &Student{
+		Name: "jack",
+		Age:  25,
+	}
+	// 向管道中写入数据
+	stuPChan <- stuP1
+	stuPChan <- stuP2
+	//stuPChan <- stuP2 //因为stuPChan的容量为2，再存放会报告deadlock
+
+	// 从管道中取数据
+	stuP11 := <-stuPChan
+	stuP22 := <-stuPChan
+	//stuP33 := <-stuPChan //因为这时候stuPChan中已经没有数据了，再取就会报告deadlock
+
+	fmt.Printf("stuP11=%v  stuP22=%v", stuP11, stuP22)
+}
+/*输出：
+stuP11=&{tom 22}  stuP22=&{jack 25}
+*/
+```
+
+
+
+#### 任意数据类型`channel`：
+
+```go
+func main() {
+	// 创建一个可以存放 4 个任意类型的管道
+	var allChan chan interface{}
+	allChan = make(chan interface{}, 4)
+
+	var num1 int = 20
+	m1 := map[string]string{"city1": "北京", "city2": "重庆"}
+	stu1 := Student{
+		Name: "tom",
+		Age:  22,
+	}
+	stuP1 := &Student{
+		Name: "jack",
+		Age:  25,
+	}
+	// 向管道中写入数据
+	allChan <- num1
+	allChan <- m1
+	allChan <- stu1
+	allChan <- stuP1
+	// 从管道中取数据
+	num2 := <-allChan
+	m2 := <-allChan
+	stu2 := <-allChan
+	stuP2 := <-allChan
+
+	fmt.Printf("num2=%v  m2=%v  stu2=%v  stuP2=%v", num2, m2, stu2, stuP2)
+}
+/*输出：
+num2=20  m2=map[city1:北京 city2:重庆]  stu2={tom 22}  stuP2=&{jack 25}
+*/
+```
+
+
+
+#### 任意数据类型`channel`与类型断言：
+
+```go
+type Student struct {
+	Name string
+	Age  int
+}
+
+func main() {
+	// 创建一个可以存放 1 个任意类型的管道
+	var allChan chan interface{}
+	allChan = make(chan interface{}, 1)
+
+	stu1 := Student{
+		Name: "tom",
+		Age:  22,
+	}
+	// 向管道中写入数据
+	allChan <- stu1
+	// 从管道中取数据
+	stu2 := <-allChan
+	fmt.Printf("stu2=%T, stu2=%v\n", stu2, stu2)
+	// stu2.Name //不能直接用，编译不通过
+	// 需要使用类型断言
+	s := stu2.(Student)
+	fmt.Printf("stu2.Name=%v", s.Name)
+}
+/*输出：
+stu2=main.Student, stu2={tom 22}
+stu2.Name=tom
+*/
+```
+
+
+
+### `channel`的关闭和遍历
+
+#### `channel`的关闭
+
+使用内置函数`close`可以关闭`channel`，当`channel`关闭后，就不能再向`channel`写数据了，但是仍然可以从该`channel`读取数据。
+
+```go
+func close(c chan<- Type)
+/*
+内建函数close关闭信道，该通道必须为双向的或只发送的。它应当只由发送者执行，而不应由接收者执行，其效果是在最后发送的值被接收后停止该通道。在最后的值从已关闭的信道中被接收后，任何对其的接收操作都会无阻塞的成功。对于已关闭的信道，语句：
+*/
+x, ok := <-c	//还会将ok置为false。
+```
+
+
+
+```go
+func main() {
+	intChan := make(chan int, 3)
+	intChan <- 100
+	intChan <- 200
+	close(intChan) //close
+	//intChan <- 300 // 关闭通道之后不能够再写入
+	// 但关闭通道后，读取数据是可以的
+	n1 := <-intChan
+	fmt.Println("n1=", n1)
+}
+```
+
+
+
+#### `channel`的遍历
+
+`channel`支持`for-range`的方式进行遍历，注意两个细节：
+
+- 在遍历时，如果`channel`没有关闭，则会出现`deadlock`的错误。
+- 在遍历时，如果`channel`已经关闭，则会正常遍历数据，遍历完后，就会退出遍历。
+
+**注意：**遍历`channel`如果要用`for`循环遍历，需要先确定`channel`的大小，如果动态地用`channel`大小做判断条件，最终只能取出一半的数据：
+
+```go
+func main() {
+	intChan1 := make(chan int, 10)
+	intChan2 := make(chan int, 10)
+	for i := 0; i < 10; i++ {
+		intChan1 <- i //存放5个数据到intChan1
+		intChan2 <- i //存放5个数据到intChan2
+	}
+	// 不能动态使用channel大小作为普通的for循环判断条件，否则只能取出一半的数据
+	fmt.Printf("方式一： ")
+	for i := 0; i < len(intChan1); i++ {
+		num := <-intChan1
+		fmt.Printf("%v  ", num)
+	}
+	// 可以先确定channel大小，再进行普通的for循环遍历
+	fmt.Printf("\n方式二： ")
+	chanLen := len(intChan2)
+	for j := 0; j < chanLen; j++ {
+		num := <-intChan2
+		fmt.Printf("%v  ", num)
+	}
+}
+/*输出：
+方式一： 0  1  2  3  4  
+方式二： 0  1  2  3  4  5  6  7  8  9
+*/
+```
+
+
+
+**使用`for-range`遍历`channel`：**
+
+```go
+func main() {
+	intChan := make(chan int, 10)
+	for i := 0; i < 10; i++ {
+		intChan <- i //存放5个数据到intChan
+	}
+	// 使用for-range遍历channel
+	// 在遍历时，如果channel没有关闭，则会出现deadlock的错误
+	// 在遍历时，如果channel已经关闭，则会正常遍历数据，遍历完后，就会退出遍历
+	close(intChan) // 关闭channel
+	fmt.Println("\n遍历前channel大小：", len(intChan))
+	for v := range intChan {
+		fmt.Printf("%v  ", v)
+	}
+	fmt.Println("\n遍历后channel大小：", len(intChan))
+}
+/*输出：
+遍历前channel大小： 10
+0  1  2  3  4  5  6  7  8  9  
+遍历后channel大小： 0
+*/
+```
+
+
+
+### 
+
+
+
+### goroutine和channel结合实例
+
+**注意：在读入的数据数量大于通道的容量时，可以读写频率不一样，但不能只写不读，否则会发生阻塞。**
+
+#### 实例1：
+
+编写`goroutine`和`channel`协同工作的程序，要求如下：
+
+1. 开启一个`writeData协程`，向管道`intChan`中写入50个整数。
+2. 开启一个`readData`协程，从管道`intChan`中读取`writeData`写入的数据。
+3. 注意：`writeData`和`readData`操作的是同一个管道。
+4. 主线程需要等待`writeData`和`readData`协程都完成工作了才能推出。
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func writeData(intChan chan int) {
+	for i := 1; i <= 20; i++ {
+		// 放入数据
+		intChan <- i
+		fmt.Println("writeData: ", i)
+		time.Sleep(time.Second )
+	}
+	close(intChan) // 写入完了就关闭
+}
+
+func readData(intChan chan int, exitChan chan bool) {
+	for {
+		v, ok := <-intChan
+		if !ok {
+			break
+		}
+		time.Sleep(time.Second )
+		fmt.Println("readData: ", v)
+	}
+	exitChan <- true //读完数据后，向exitChan写入true
+	close(exitChan)  //写入后关闭exitChan
+}
+
+func main() {
+	intChan := make(chan int, 20)
+	exitChan := make(chan bool, 1)
+	go writeData(intChan)
+	go readData(intChan, exitChan)
+	for {
+		_, ok := <-exitChan
+		fmt.Println("exit-ok:", ok)
+		if !ok {
+			break
+		}
+	}
+}
+
+```
+
+
+
+#### 实例2：
+
+统计1-200000的数字中，哪些是素数？
+
+**传统方法：**
+
+```go
+func main() {
+	var count int
+	start := time.Now().UnixMicro() // 单位：微秒
+label:
+	for num := 2; num <= 200000; num++ {
+		for i := 2; i < num; i++ {
+			if num%i == 0 { //说明该num不是素数
+				continue label
+			}
+		}
+		//fmt.Printf("%v是素数！\n", num)
+		count++
+	}
+	end := time.Now().UnixMicro() // 单位：微秒
+	fmt.Printf("素数个数：%v\n", count)
+	fmt.Printf("传统方法耗时= %v 微秒", end-start)
+}
+/*输出：
+素数个数：17984
+传统方法耗时= 11725486 微秒
+*/
+```
+
+
+
+**使用`goroutine`和`channel`：**
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func putNum(intChan chan int, n int) {
+	// 向intChan中放入n个数据
+	for i := 2; i <= n; i++ {
+		intChan <- i
+	}
+	close(intChan) //关闭
+}
+
+func primeNumber(intChan chan int, primeChan chan int, exitChan chan bool) {
+label:
+	for {
+		num, ok := <-intChan
+		if !ok { // intChan 取不到
+			break
+		}
+		// 判断是不是素数
+		for i := 2; i < num; i++ {
+			if num%i == 0 { // 说明该num不是素数
+				continue label
+			}
+		}
+		primeChan <- num //如果该num是素数，就放入primeChan中
+	}
+	fmt.Println("有一个primeNum 协程因取不到数据而退出！")
+	// 由于创建的多个协程共用primeChan管道，这里还不能关闭primeChan，防止其他协程不能向通道中写入数据
+	exitChan <- true //向exitChan 写入true,标识该协程结束，退出管道
+}
+
+func closePrimeChan(exitChan chan bool, primeChan chan int) {
+	for i := 0; i < 4; i++ {
+		<-exitChan
+	}
+	end = time.Now().UnixMicro() // 单位：微秒
+	close(primeChan)
+}
+
+func main() {
+
+	intChan := make(chan int, 10000)
+	primeChan := make(chan int, 200000)
+	// 标识退出的管道协程
+	exitChan := make(chan bool, 4)
+
+	start = time.Now().UnixMicro() // 单位：微秒
+
+	// 开启一个putNum协程，向intChan中放入1-200000个数
+	go putNum(intChan, 200000)
+	// 开启4个primeNumber协程，从intChan中取出数据，并判断是否为素数
+	// 如果是素数，就放入到primeChan
+	for i := 0; i < 4; i++ {
+		go primeNumber(intChan, primeChan, exitChan)
+	}
+
+	//当从exitChan中取出4个数据，就可以放心关闭primeChan
+	go closePrimeChan(exitChan, primeChan)
+
+	// 遍历primeChan，把结果取出来
+	for {
+		//res, ok := <-primeChan
+		_, ok := <-primeChan
+		if !ok {
+			fmt.Printf("素数个数：%v\n", count)
+			fmt.Printf("main线程退出，耗时：%v 微秒", end-start)
+			break
+		}
+		count++ // 统计素数个数
+		//fmt.Printf("素数=%d\n", res)
+	}
+}
+/*输出：
+有一个primeNum 协程因取不到数据而退出！
+有一个primeNum 协程因取不到数据而退出！
+有一个primeNum 协程因取不到数据而退出！
+有一个primeNum 协程因取不到数据而退出！
+素数个数：17984
+main线程退出，耗时：3147292 微秒
+*/
+```
+
+传统方法耗时：11725486 微秒
+
+使用`goroutine`和`channel`耗时：3147292 微秒
+
+可以看出传统方法耗时是使用`goroutine`和`channel`耗时的**大约4倍**。
+
+
+
+### `channel`使用细节
+
+#### 单向通道
+
+`channel`可以声明为只读或者只写（**即单向通道**）.在函数传参及任何赋值操作中全向通道（正常通道）可以转换为单向通道，但是无法反向转换。
+
+```go
+func main() {
+	// 1.在默认情况下，管道是双向的
+	var ch1 chan int
+	ch1 = make(chan int, 3)
+	ch1 <- 10
+	num1 := <-ch1
+	fmt.Println(num1)
+
+	// 2.声明为只写
+	var ch2 chan<- int
+	ch2 = ch1 // ch1转换为单向只写通道
+	ch2 <- 20
+	//num2 := <-ch2 // 错误，只能写，不能读
+	fmt.Println("ch2", ch2)
+
+	// 3.声明为只读
+	var ch3 <-chan int
+	ch3 = ch1 // ch1转换为单向只读通道
+	num3 := <-ch3
+	//ch3 <- 30	//错误，只能读，不能写
+	fmt.Println("num3=", num3)
+}
+```
+
+
+
+#### select语句
+
+Select 的使用方式类似于之前学到的 switch 语句，它也有一系列 case 分支和一个默认的分支。每个 case 分支会对应一个通道的通信（接收或发送）过程。select 会一直等待，直到其中的某个 case 的通信操作完成时，就会执行该 case 分支对应的语句。具体格式如下：
+
+```go
+select {
+case <-ch1:
+	//...
+case data := <-ch2:
+	//...
+case ch3 <- 10:
+	//...
+default:
+	//默认操作
+}
+```
+
+**select语句具有以下特点：**
+
+- 可以处理一个或多个channel的发送/接受操作。
+- 如果多个case同时满足，select会随机选择一个执行。
+- 对于没有case的select会一直阻塞，可用于阻塞main函数，防止退出。
+
+```go
+func main() {
+	// 使用select可以解决从管道取数据的阻塞问题
+	// 1.定义一个含有10个int数据的管道
+	intChan := make(chan int, 10)
+	for i := 1; i <= 10; i++ {
+		intChan <- i
+	}
+	// 2.定义一个含有5个string数据的管道
+	stringChan := make(chan string, 5)
+	for i := 1; i <= 5; i++ {
+		stringChan <- "hello," + fmt.Sprintf("%d", i)
+	}
+
+	//close(intChan)
+	//close(stringChan)
+	//for i := 0; i < 15; i++ {
+	//	fmt.Println("intChan:", <-intChan)
+	//	fmt.Println("stringChan:", <-stringChan)
+	//} // 如果没有关闭intChan、stringChan，就会阻塞而导致deadlock
+
+	// 在实际开发中，不好确定什么时候关闭通道
+	// 可以使用select方式解决
+	for {
+		// 注意：这里intChan、stringChan一直没有关闭，并不会一直阻塞而导致deadlock
+		// 会自动匹配case
+		select {
+		case v := <-intChan:
+			fmt.Println("intChan:", v)
+			time.Sleep(time.Second)
+		case v := <-stringChan:
+			fmt.Println("intChan:", v)
+			time.Sleep(time.Second)
+		default:
+			fmt.Println("都取不到了，不取了，退出程序！")
+			return
+		}
+	}
+}
+```
+
+
+
+# 反射
+
+## 基本介绍
+
+- 反射可以在运行时**动态获取变量的各种信息**，比如变量的类型（type）、类别（kind）。
+- 如果是结构体变量，还可以获取到结构体本身的信息（包括结构体的字段、方法）。
+- 通过反射，可以修改变量的值，可以调用关联的方法。
+
+
+
+## reflect包
+
+在Go语言的反射机制中，任何接口值都由是`一个具体类型`和`具体类型的值`两部分组成的。 在Go语言中反射的相关功能由内置的reflect包提供，任意接口值在反射中都可以理解为由`reflect.Type`和`reflect.Value`两部分组成，并且reflect包提供了`reflect.TypeOf`和`reflect.ValueOf`两个函数来获取任意对象的Value和Type。
+
+### reflect.Type
+
+#### Type接口
+
+```go
+type Type interface {
+    // Kind返回该接口的具体分类
+    Kind() Kind
+    // Name返回该类型在自身包内的类型名，如果是未命名类型会返回""
+    Name() string
+    // PkgPath返回类型的包路径，即明确指定包的import路径，如"encoding/base64"
+    // 如果类型为内建类型(string, error)或未命名类型(*T, struct{}, []int)，会返回""
+    PkgPath() string
+    // 返回类型的字符串表示。该字符串可能会使用短包名（如用base64代替"encoding/base64"）
+    // 也不保证每个类型的字符串表示不同。如果要比较两个类型是否相等，请直接用Type类型比较。
+    String() string
+    // 返回要保存一个该类型的值需要多少字节；类似unsafe.Sizeof
+    Size() uintptr
+    // 返回当从内存中申请一个该类型值时，会对齐的字节数
+    Align() int
+    // 返回当该类型作为结构体的字段时，会对齐的字节数
+    FieldAlign() int
+    // 如果该类型实现了u代表的接口，会返回真
+    Implements(u Type) bool
+    // 如果该类型的值可以直接赋值给u代表的类型，返回真
+    AssignableTo(u Type) bool
+    // 如该类型的值可以转换为u代表的类型，返回真
+    ConvertibleTo(u Type) bool
+    // 返回该类型的字位数。如果该类型的Kind不是Int、Uint、Float或Complex，会panic
+    Bits() int
+    // 返回array类型的长度，如非数组类型将panic
+    Len() int
+    // 返回该类型的元素类型，如果该类型的Kind不是Array、Chan、Map、Ptr或Slice，会panic
+    Elem() Type
+    // 返回map类型的键的类型。如非映射类型将panic
+    Key() Type
+    // 返回一个channel类型的方向，如非通道类型将会panic
+    ChanDir() ChanDir
+    // 返回struct类型的字段数（匿名字段算作一个字段），如非结构体类型将panic
+    NumField() int
+    // 返回struct类型的第i个字段的类型，如非结构体或者i不在[0, NumField())内将会panic
+    Field(i int) StructField
+    // 返回索引序列指定的嵌套字段的类型，
+    // 等价于用索引中每个值链式调用本方法，如非结构体将会panic
+    FieldByIndex(index []int) StructField
+    // 返回该类型名为name的字段（会查找匿名字段及其子字段），
+    // 布尔值说明是否找到，如非结构体将panic
+    FieldByName(name string) (StructField, bool)
+    // 返回该类型第一个字段名满足函数match的字段，布尔值说明是否找到，如非结构体将会panic
+    FieldByNameFunc(match func(string) bool) (StructField, bool)
+    // 如果函数类型的最后一个输入参数是"..."形式的参数，IsVariadic返回真
+    // 如果这样，t.In(t.NumIn() - 1)返回参数的隐式的实际类型（声明类型的切片）
+    // 如非函数类型将panic
+    IsVariadic() bool
+    // 返回func类型的参数个数，如果不是函数，将会panic
+    NumIn() int
+    // 返回func类型的第i个参数的类型，如非函数或者i不在[0, NumIn())内将会panic
+    In(i int) Type
+    // 返回func类型的返回值个数，如果不是函数，将会panic
+    NumOut() int
+    // 返回func类型的第i个返回值的类型，如非函数或者i不在[0, NumOut())内将会panic
+    Out(i int) Type
+    // 返回该类型的方法集中方法的数目
+    // 匿名字段的方法会被计算；主体类型的方法会屏蔽匿名字段的同名方法；
+    // 匿名字段导致的歧义方法会滤除
+    NumMethod() int
+    // 返回该类型方法集中的第i个方法，i不在[0, NumMethod())范围内时，将导致panic
+    // 对非接口类型T或*T，返回值的Type字段和Func字段描述方法的未绑定函数状态
+    // 对接口类型，返回值的Type字段描述方法的签名，Func字段为nil
+    Method(int) Method
+    // 根据方法名返回该类型方法集中的方法，使用一个布尔值说明是否发现该方法
+    // 对非接口类型T或*T，返回值的Type字段和Func字段描述方法的未绑定函数状态
+    // 对接口类型，返回值的Type字段描述方法的签名，Func字段为nil
+    MethodByName(string) (Method, bool)
+    // 内含隐藏或非导出方法
+}
+```
+
+
+
+
+
+#### TypeOf
+
+在Go语言中，使用`reflect.TypeOf()`函数可以获得任意值的类型对象（`reflect.Type`），程序通过类型对象可以访问任意值的类型信息。
+
+```go
+func reflectType(x interface{}) {
+	t := reflect.TypeOf(x)
+	fmt.Printf("type:%v\n", t)
+}
+
+func main() {
+	var a float32 = 3.14
+	reflectType(a) //type:float32
+	var b int64 = 100
+	reflectType(b) //type:int64
+}
+```
+
+#### Name()与Kind()
+
+在反射中关于类型还划分为两种：`类型（Type）`和`种类（Kind）`。因为在Go语言中我们可以使用type关键字构造很多自定义类型，而`种类（Kind）`就是指底层的类型，但在反射中，当需要区分指针、结构体等大品种的类型时，就会用到`种类（Kind）`。 举个例子，我们定义了两个指针类型和两个结构体类型，通过反射查看它们的类型和种类：
+
+```go
+type myInt int64
+
+func reflectType(x interface{}) {
+	t := reflect.TypeOf(x)
+	fmt.Printf("typeName:%v  kind:%v\n", t.Name(), t.Kind())
+}
+
+func main() {
+	var a *float32 // 指针
+	var b myInt    // 自定义类型
+	var c rune     // 类型别名(int32)
+	reflectType(a) //typeName:  kind:ptr
+	reflectType(b) //typeName:myInt kind:int64
+	reflectType(c) //typeName:int32 kind:int32
+
+	type person struct {
+		name string
+		age  int
+	}
+	var d = person{"孙悟空", 500}
+
+	type book struct{ title string }
+	var e = book{"《西游记》"}
+
+	reflectType(d) // typeName:person kind:struct
+	reflectType(e) // typeName:book kind:struct
+}
+```
+
+Go语言的反射中像数组、切片、Map、指针等类型的变量，它们的`.Name()`都是返回`空`/`""`
+
+在`reflect`包中定义的Kind类型如下，Kind代表Type类型值表示的具体分类。零值表示非法分类：
+
+```go
+type Kind uint
+const (
+    Invalid Kind = iota  // 非法类型
+    Bool                 // 布尔型
+    Int                  // 有符号整型
+    Int8                 // 有符号8位整型
+    Int16                // 有符号16位整型
+    Int32                // 有符号32位整型
+    Int64                // 有符号64位整型
+    Uint                 // 无符号整型
+    Uint8                // 无符号8位整型
+    Uint16               // 无符号16位整型
+    Uint32               // 无符号32位整型
+    Uint64               // 无符号64位整型
+    Uintptr              // 指针
+    Float32              // 单精度浮点数
+    Float64              // 双精度浮点数
+    Complex64            // 64位复数类型
+    Complex128           // 128位复数类型
+    Array                // 数组
+    Chan                 // 通道
+    Func                 // 函数
+    Interface            // 接口
+    Map                  // 映射
+    Ptr                  // 指针
+    Slice                // 切片
+    String               // 字符串
+    Struct               // 结构体
+    UnsafePointer        // 底层指针
+)
+```
+
+
+
+### reflect.Value
+
+#### ValueOf
+
+`reflect.ValueOf()`返回的是`reflect.Value`类型，其中包含了原始值的值信息。`reflect.Value`与原始值之间可以互相转换。
+
+```go
+func ValueOf(i interface{}) Value
+//ValueOf返回一个初始化为i接口保管的具体值的Value，ValueOf(nil)返回Value零值。
+```
+
+`reflect.Value`类型提供的**获取原始值**的方法如下：
+
+|            方法            |                             说明                             |
+| :------------------------: | :----------------------------------------------------------: |
+| `Interface() interface {}` | 将值以`interface{}`类型返回，可以通过类型断言转换为指定类型  |
+|       `Int() int64`        |     将值以`int`类型返回，所有有符号整型均可以此方式返回      |
+|      `Uint() uint64`       |     将值以`uint`类型返回，所有无符号整型均可以此方式返回     |
+|     `Float() float64`      | 将值以双精度(`float64`类型返回)，所有浮点数（`float32`、`float64`）均可以此方式返回 |
+|       `Bool() bool`        |                     将值以`bool`类型返回                     |
+|     `Bytes() []bytes`      |               将值以字节数组`[]bytes`类型返回                |
+|     `String() string`      |                     将值以字符串类型返回                     |
+
+```go
+func main() {
+	// 将int类型的原始值转换为reflect.Value类型
+	a := reflect.ValueOf(10)
+	// 将float32 类型的原始值转换为reflect.Value类型
+	var v float32 = 3.14
+	b := reflect.ValueOf(v)
+
+	fmt.Printf("type a : %T\n", a) //type a : reflect.Value
+	fmt.Printf("type b : %T\n", b) //type b : flect.Value
+}
+```
+
+
+
+#### 通过反射获取值
+
+```go
+func reflectValue(x interface{}) {
+	v := reflect.ValueOf(x)
+	k := v.Kind()
+	switch k {
+	case reflect.Int32:
+		//v.Int()从反射中获取整型的原始值(int64)，然后通过int32()强制类型转换
+		fmt.Printf("type is int32, value is %d\n", int32(v.Int()))
+	case reflect.Float32:
+		//v.Int()从反射中获取浮点型的原始值(float64)，然后通过float32()强制类型转换
+		fmt.Printf("type is float32, value is %f\n", float32(v.Float()))
+	}
+}
+
+func main() {
+	var a float32 = 3.14
+	var b int32 = 100
+	reflectValue(a) // type is float32, value is 3.140000
+	reflectValue(b) // type is int32, value is 100
+}
+```
+
+
+
+#### 通过反射设置变量的值
+
+想要在函数中通过反射修改变量的值，需要注意函数参数传递的是值拷贝，必须传递变量地址才能修改变量值。而反射中使用专有的`Elem()`方法来获取指针对应的值。
+
+```go
+func reflectSetValue(x interface{}) {
+	v := reflect.ValueOf(x)
+	//if v.Kind() == reflect.Int64{
+	//	v.SetInt(200)	//修改的是副本，reflect包会引发panic
+	//}
+	if v.Elem().Kind() == reflect.Int64 {
+		v.Elem().SetInt(200)
+	}
+}
+
+func main() {
+	var a int64 = 100
+	reflectValue(&a)
+	fmt.Println("修改值后的a：", a) // 修改值后的a：100
+}
+```
+
+
+
+#### isNil()和isValid()
+
+```go
+func (v Value) IsNil() bool
+/*
+IsNil报告v持有的值是否为nil。v持有的值的分类必须是通道、函数、接口、映射、指针、切片之一；否则IsNil函数会导致panic。注意IsNil并不总是等价于go语言中值与nil的常规比较。例如：如果v是通过使用某个值为nil的接口调用ValueOf函数创建的，v.IsNil()返回真，但是如果v是Value零值，会panic。
+*/
+
+func (v Value) IsValid() bool
+/*
+IsValid返回v是否持有一个值。如果v是Value零值会返回假，此时v除了IsValid、String、Kind之外的方法都会导致panic。绝大多数函数和方法都永远不返回Value零值。如果某个函数/方法返回了非法的Value，它的文档必须显式的说明具体情况。
+*/
+```
+
+- `IsNil()`常被用于判断**指针是否为空**。
+- `IsValid()`常被用于判定**返回值是否有效**。
+
+```go
+func main() {
+	// int类型空指针
+	var a *int
+	fmt.Println("var a *int isNil: ", reflect.ValueOf(a).IsNil())
+	// nil值
+	fmt.Println("nil isValid: ", reflect.ValueOf(nil).IsValid())
+}
+/*输出：
+var a *int isNil:  true
+nil isValid:  false
+*/
+```
+
+
+
+#### 其他方法：
+
+```go
+func (v Value) FieldByName(name string) Value
+/*
+返回该类型名为name的字段（的Value封装）（会查找匿名字段及其子字段），如果v的Kind不是Struct会panic；如果未找到会返回Value零值。
+*/
+
+func (v Value) MethodByName(name string) Value
+/*
+返回v的名为name的方法的已绑定（到v的持有值的）状态的函数形式的Value封装。返回值调用Call方法时不应包含接收者；返回值持有的函数总是使用v的持有者作为接收者（即第一个参数）。如果未找到该方法，会返回一个Value零值。
+*/
+
+func (v Value) MapIndex(key Value) Value
+/*
+返回v持有值里key持有值为键对应的值的Value封装。如果v的Kind不是Map会panic。如果未找到对应值或者v持有值是nil映射，会返回Value零值。key的持有值必须可以直接赋值给v持有值类型的键类型。
+*/
+
+func (v Value) Type() Type
+// 返回v持有的值的类型的Type表示。
+
+func (v Value) Kind() Kind
+// Kind返回v持有的值的分类，如果v是Value零值，返回值为Invalid
+
+func (v Value) Elem() Value
+/*
+Elem返回v持有的接口保管的值的Value封装，或者v持有的指针指向的值的Value封装。如果v的Kind不是Interface或Ptr会panic；如果v持有的值为nil，会返回Value零值。
+*/
+
+func (v Value) Field(i int) Value
+// 返回结构体的第i个字段（的Value封装）。如果v的Kind不是Struct或i出界会panic
+
+
+```
+
+```go
+func main() {
+	// 实例化一个匿名结构体
+	a := struct {
+		Name string
+	}{"tom"}
+	// 尝试从结构体中查找"abc"字段
+	v := reflect.ValueOf(a).FieldByName("Name")
+	fmt.Println("是否存在结构体成员Name:", v.IsValid(), ",其值为：", v)
+	// 尝试从结构体中查找"abc"方法
+	fmt.Println("是否存在结构体方法GetName:", reflect.ValueOf(a).MethodByName("GetName").IsValid())
+	// map
+	b := map[string]int{}
+	// 尝试从map中查找一个不存在的键
+	fmt.Println("map中是否存在键city：", reflect.ValueOf(b).MapIndex(reflect.ValueOf("city")).IsValid())
+}
+/*输出：
+是否存在结构体成员Name: true ,其值为： tom
+是否存在结构体方法GetName: false
+map中是否存在键city： false
+*/
+```
+
+
+
+## 结构体反射
+
+### 基本方法
+
+任意值通过`reflect.TypeOf()`获得反射对象信息后，如果它的类型是结构体，可以通过反射值对象（`reflect.Type`）的`NumField()`和`Field()`方法获得结构体成员的详细信息。
+
+**`reflect.Type`中与获取结构体成员相关的的方法如下表所示：**
+
+|                             方法                             |                             说明                             |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                  `Field(i int) StructField`                  |          根据索引，返回索引对应的结构体字段的信息。          |
+|                       `NumField() int`                       |                   返回结构体成员字段数量。                   |
+|        `FieldByName(name string) (StructField, bool)`        |       根据给定字符串返回字符串对应的结构体字段的信息。       |
+|           `FieldByIndex(index []int) StructField`            | 多层成员访问时，根据 []int 提供的每个结构体的字段索引，返回字段的信息。 |
+| `FieldByNameFunc(match func(string) bool) (StructField,bool)` |              根据传入的匹配函数匹配需要的字段。              |
+|                      `NumMethod() int`                       |               返回该类型的方法集中方法的数目。               |
+|                     `Method(int) Method`                     |               返回该类型方法集中的第i个方法。                |
+|             `MethodByName(string)(Method, bool)`             |             根据方法名返回该类型方法集中的方法。             |
+
+
+
+**`reflect.Value`中与获取结构体成员相关的的方法如下表所示：**
+
+|                       方法                       |                             说明                             |
+| :----------------------------------------------: | :----------------------------------------------------------: |
+|         `func (v Value) NumMethod() int`         |               返回v持有值的方法集的方法数目。                |
+|       `func (v Value) Method(i int) Value`       | 返回v持有值类型的第i个方法的已绑定（到v的持有值的）状态的函数形式的Value封装 |
+| `func (v Value) MethodByName(name string) Value` | 返回v的名为name的方法的已绑定（到v的持有值的）状态的函数形式的Value封装。 |
+|                       ...                        |                             ...                              |
+
+
+
+### StructField类型
+
+`StructField`类型用来描述结构体中的一个字段的信息。
+
+```go
+type StructField struct {
+    // Name是字段的名字。PkgPath是非导出字段的包路径，对导出字段该字段为""。
+    // 参见http://golang.org/ref/spec#Uniqueness_of_identifiers
+    Name    string
+    PkgPath string
+    Type      Type      // 字段的类型
+    Tag       StructTag // 字段的标签
+    Offset    uintptr   // 字段在结构体中的字节偏移量
+    Index     []int     // 用于Type.FieldByIndex时的索引切片
+    Anonymous bool      // 是否匿名字段
+}
+```
+
+
+
+### 结构体反射实例
+
+当我们使用反射得到一个结构体数据之后可以通过索引依次获取其字段信息，也可以通过字段名去获取指定的字段信息。
+
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type student struct {
+	Name  string `json:"stu_name"`
+	Score int    `json:"stu_score"`
+}
+
+// 给 student 添加两个方法 Study 和 Sleep
+
+func (s student) Study() string {
+	msg := "学习使我快乐！"
+	fmt.Printf(msg)
+	return msg
+}
+
+func (s student) Sleep() string {
+	msg := "早睡觉，身体好！"
+	fmt.Println(msg)
+	return msg
+}
+
+func printMethod(x interface{}) {
+	// 遍历打印x包含的方法
+	t := reflect.TypeOf(x)
+	v := reflect.ValueOf(x)
+	fmt.Println("x 含有的方法数量：", t.NumMethod())
+	//因为下面需要拿到具体的方法去调用，所以使用的是指信息
+	for i := 0; i < v.NumMethod(); i++ {
+		methodType := v.Method(i).Type()
+		fmt.Printf("method name: %s, method: %s\n", t.Method(i).Name, methodType)
+		// 通过反射调用方法传递的参数必须是 []reflect.Value 类型
+		var args = []reflect.Value{}
+		v.Method(i).Call(args)
+	}
+}
+
+func main() {
+	stu1 := student{"孙悟空", 90}
+	t := reflect.TypeOf(stu1)
+	fmt.Printf("stu1 type: %v, kind: %v\n", t.Name(), t.Kind())
+	// 通过for循环遍历结构体的所以字段信息
+	fmt.Println("通过for循环遍历结构体的所以字段信息：")
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i) // 通过索引，返回索引对应的结构体字段的信息
+		fmt.Printf("index:%v, name:%v, type:%v, json tag:%v\n", field.Index, field.Name, field.Type, field.Tag)
+	}
+
+	//通过字段名获取指定结构体字段信息
+	fmt.Println("通过字段名获取指定结构体字段信息：")
+	if nameField, ok := t.FieldByName("Name"); ok {
+		fmt.Printf("index:%v, name:%v, type:%v, json tag:%v\n", nameField.Index, nameField.Name, nameField.Type, nameField.Tag)
+	}
+	if scoreField, ok := t.FieldByName("Score"); ok {
+		fmt.Printf("index:%v, name:%v, type:%v, json tag:%v\n", scoreField.Index, scoreField.Name, scoreField.Type, scoreField.Tag)
+	}
+
+	// 遍历打印s包含的方法
+	printMethod(stu1)
+}
+```
+
+
+
+## 反射案例
+
+1. 对基本数据类型、interface{}、reflect.Value进行相互转换
+
+	```go
+	func reflectTest1(x interface{}) {
+		// 通过反射获取传入的变量的type，kind以及值
+		xType := reflect.TypeOf(x) // 获取到 reflect.Type
+		fmt.Println("xType= ", xType)
+		xValue := reflect.ValueOf(x) //获取到 reflect.Value
+		newXValue := 2 + xValue.Int()
+		fmt.Printf("xValue= %v , newXValue= %v\n", xValue, newXValue)
+		// 将 xValue 转换成 interface{}
+		interValue := xValue.Interface()
+		// 将interface{}通过断言转成需要的类型
+		num := interValue.(int)
+		fmt.Println("num=", num)
+	}
+	
+	func main() {
+		var x int = 100
+		reflectTest1(x)
+	}
+	/*输出：
+	xType=  int
+	xValue= 100 , newXValue= 102
+	num= 100
+	*/
+	```
+
+2. 使用反射来遍历结构体的字段，调用结构体的方法，并获取结构体标签的值：
+
+	```go
+	package main
+	
+	import (
+		"fmt"
+		"reflect"
+	)
+	
+	type Student struct {
+		Name  string  `json:"stu_name"`
+		Age   int     `json:"stu_age"`
+		Score float32 `json:"成绩"`
+		Sex   string
+	}
+	
+	func (s Student) GetSum(n1 int, n2 int) int {
+		// 方法一：返回两个数的和
+		return n1 + n2
+	}
+	
+	func (s *Student) SetStudent(name string, age int, score float32, sex string) {
+		// 方法二：接收四个值，给s赋值
+		s.Name = name
+		s.Age = age
+		s.Score = score
+		s.Sex = sex
+	}
+	
+	func (s Student) ShowInfo() {
+		// 显示s的值
+		fmt.Println("-----start-----")
+		fmt.Println(s)
+		fmt.Println("-----end-----")
+	}
+	
+	func TestStruct(a interface{}) {
+		// 获取reflect.Type类型
+		aType := reflect.TypeOf(a)
+		// 获取reflect.Value类型
+		aValue := reflect.ValueOf(a)
+		// 获取a对应的类别kind
+		aKind := aValue.Kind()
+		// 如果传入的不是struct就退出
+		if aKind != reflect.Struct {
+			fmt.Println("expect struct")
+			return
+		}
+		// 如果传入的是struct，就进行如下操作：
+		// 获取该结构体有几个字段
+		fieldNum := aValue.NumField()
+		fmt.Printf("this struct has %d fields\n", fieldNum)
+	
+		// 遍历结构体的所有字段
+		for i := 0; i < fieldNum; i++ {
+			fmt.Printf("Field %d, 值= %v\n", i, aValue.Field(i))
+			// 获取到struct标签，注意需要通过reflect.Type来获取tag标签的值
+			tagValue := aType.Field(i).Tag.Get("json")
+			// 如果该字段有tag标签就显示，否则就不显示
+			if tagValue != "" {
+				fmt.Printf("Field %d, tag= %v\n", i, tagValue)
+			}
+		}
+	
+		// 获取到该结构体有多少个方法
+		numOfMethod := aValue.NumMethod() // numOfMethod=2，虽然struct有三个方法，但其中一个是绑定的struct指针
+		fmt.Printf("\nthis struct has %d methods\n", numOfMethod)
+	
+		// 注意：方法的排序默认是按照函数名的排序（ASCII码）
+		//调用结构体的第一个方法
+		var params []reflect.Value
+		params = append(params, reflect.ValueOf(10), reflect.ValueOf(20))
+		//调动结构体的第一个方法，即GetSum()，参数n1,n2需要使用[]reflect.Value类型来传入，返回的结果也是[]reflect.Value
+		res := aValue.Method(0).Call(params)
+		fmt.Println("method 1 result: ", res[0].Int())
+	
+		//调用结构体第三个方法打印结构体信息
+		fmt.Println("method 2 result: ")
+		aValue.Method(1).Call(make([]reflect.Value, 0))
+	
+	}
+	
+	func main() {
+		var stu Student = Student{}
+		stu.SetStudent("tom", 22, 90.5, "男")
+		TestStruct(stu)
+	}
+	/*输出：
+	this struct has 4 fields
+	Field 0, 值= tom
+	Field 0, tag= stu_name
+	Field 1, 值= 22
+	Field 1, tag= stu_age
+	Field 2, 值= 90.5
+	Field 2, tag= 成绩
+	Field 3, 值= 男
+	
+	this struct has 2 methods
+	method 1 result:  30
+	method 2 result: 
+	-----start-----
+	{tom 22 90.5 男}
+	-----end-----
+	*/
+	```
+
+	
+
+# 并发
