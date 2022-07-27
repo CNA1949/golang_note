@@ -1719,6 +1719,28 @@ for index, value := range slice {
 
 
 
+### 元素添加
+
+方式一：
+
+```go
+var a = []int{1, 2, 3}
+a = append(a, 3)	// [1, 2, 3]
+a = append(a, 4, 5)	// [1, 2, 3, 4, 5]
+```
+
+方式二：
+
+```go
+var a = []int{1, 2, 3}
+var b = []int{4, 5, 6}
+var c = []int{7, 8, 9, 10}
+a = append(a, b...)	// 切片后加...，相当于拆包成单个元素  [1, 2, 3, 4, 5, 6]
+a = append(a, c[:2])	// [1, 2, 3, 4, 5, 6, 7, 8]
+```
+
+
+
 ## 	string和切片
 
 - `string`底层是一个`byte`数组，因此`string`也可以进行切片处理：
@@ -2207,6 +2229,262 @@ stu5 := &Student{
 	/*输出：
 	jsonStu： {"name":"孙悟空","age":500}
 	*/
+	```
+
+
+
+
+### 内存对齐
+
+[在 Go 中恰到好处的内存对齐 - SegmentFault 思否](https://segmentfault.com/a/1190000017527311?utm_campaign=studygolang.com&utm_medium=studygolang.com&utm_source=studygolang.com)
+
+
+
+**默认对齐系数：**在不同平台上的编译器都有自己默认的 “对齐系数”，可通过预编译命令 `#pragma pack(n)` 进行变更，n 就是代指 “对齐系数”。一般来讲，我们常用的平台的系数如下：
+
+- 32 位：4
+- 64 位：8
+
+另外要注意，不同硬件平台占用的大小和对齐值都可能是不一样的。因此本文的值不是唯一的，调试的时候需按本机的实际情况考虑。
+
+**对齐规则：**
+
+- 结构体的成员变量，第一个成员变量的偏移量为 0。往后的每个成员变量的对齐值必须为**编译器默认对齐长度**（`#pragma pack(n)`）或**当前成员变量类型的长度**（`unsafe.Sizeof`），取**最小值作为当前类型的对齐值**。其偏移量必须为对齐值的整数倍
+- 结构体本身，对齐值必须为**编译器默认对齐长度**（`#pragma pack(n)`）或**结构体的所有成员变量类型中的最大长度**，取**最大数的最小整数倍**作为对齐值
+- 结合以上两点，可得知若**编译器默认对齐长度**（`#pragma pack(n)`）超过结构体内成员变量的类型最大长度时，默认对齐长度是没有任何意义的
+
+**基本数据类型自身大小和偏移量大小：**
+
+```go
+基本数据类型  占用大小  偏移量
+bool	:	size= 1 , align= 1
+byte	:	size= 1 , align= 1
+rune	:	size= 4 , align= 4
+int8	:	size= 1 , align= 1
+uint8	:	size= 1 , align= 1
+int16	:	size= 2 , align= 2
+uint16	:	size= 2 , align= 2
+int32	:	size= 4 , align= 4
+uint32	:	size= 4 , align= 4
+int64	:	size= 8 , align= 8
+uint64	:	size= 8 , align= 8
+float32	:	size= 4 , align= 4
+float64	:	size= 8 , align= 8
+string	:	size= 16 , align= 8
+struct{}	:	size= 0 , align= 1
+```
+
+案例1：
+
+```go
+type Part1 struct {
+    a bool
+    b int32
+    c int8
+    d int64
+    e byte
+}
+
+type Part2 struct {
+    e byte
+    c int8
+    a bool
+    b int32
+    d int64
+}
+
+func main() {
+    part1 := Part1{}
+    part2 := Part2{}
+
+    fmt.Printf("part1 size: %d, align: %d\n", unsafe.Sizeof(part1), unsafe.Alignof(part1))
+    fmt.Printf("part2 size: %d, align: %d\n", unsafe.Sizeof(part2), unsafe.Alignof(part2))
+}
+/*输出：
+part1 size: 32, align: 8
+part2 size: 16, align: 8
+*/
+```
+
+```go
+// 这里的系统默认的对齐系数为：8，x充当填充
+对于part1：
+   type Part1 struct {
+    a bool	// size=1 align=1
+    b int32	// size=4 align=4
+    c int8	// size=1 align=1
+    d int64	// size=8 align=8
+    e byte	// size=1 align=1
+}
+其内存布局为：axxx|bbbb|cxxx|xxxx|dddd|dddd|exxx|xxxx	size=32
+
+对于part1：
+   type Part1 struct {
+    e byte	// size=1 align=1
+    c int8	// size=1 align=1
+    a bool	// size=1 align=1
+    b int32	// size=4 align=4
+    d int64	// size=8 align=8
+}
+其内存布局为：ecax|bbbb|dddd|dddd  size=16
+```
+
+
+
+案例2：
+
+下面这个结构体的成员怎么排布，占用内存最小？（假设系统64位）
+
+```GO
+type A struct{
+  byte1 byte	
+  a struct{}	
+  num1 int32	
+  str string
+}
+```
+
+| 数据类型 | size(本身字节大小) | align(对齐方式/偏移量) |
+| :------: | ------------------ | ---------------------- |
+|   byte   | 1                  | 1                      |
+|  struct  | 0                  | 1                      |
+|  int32   | 4                  | 4                      |
+|  string  | 16                 | 8                      |
+
+系统64位对齐系数：8
+
+该结构体占用内存最小为：24，题目本身的排布方式就是其中一种。
+
+```go
+// 重新命名
+type A struct{
+  b byte	
+  a struct{}	
+  c int32	
+  d string	
+}	
+/*
+内存布局：b_··|cccc|dddd|dddd|dddd|dddd	（下划线_为a的占位，但a不占用内存,但结构体A此处本身对齐值为系统默认对齐长度8（8<16(size:string)）的整数倍，即24）
+*/
+```
+
+再看两个个占用内存较大的排布方式：
+
+```go
+type A struct {
+	d string
+	b byte
+	c int32
+	a struct{}
+}
+/*
+内存布局：dddd|dddd|dddd|dddd|b···|cccc|_···|····（下划线_为a的占位，但a不占用内存,但结构体A此处本身对齐值为系统默认对齐长度8的整数倍，即32，a之后需要再填充7个字节）
+*/
+
+type A struct {
+	b byte
+	a struct{}
+	d string
+	c int32
+}
+/*
+内存布局：b_··|····|dddd|dddd|dddd|dddd|cccc|····
+这里d的偏移量为8字节，因此在b和a过后需要填充6个字节，结构体本身再满足8字节的整倍数32
+*/
+```
+
+
+
+### 空结构体
+
+```go
+type A struct{}
+var a struct{}
+fmt.Printf("size= %d , align= %d\n", unsafe.Sizeof(a), unsafe.Alignof(a))
+// size= 0 , align= 1
+```
+
+空结构体类型变量的地址都是一样的：zerobase。在golang中，只要分配的内存为0，就返回zerobase这个变量地址。zerobase这个变量是一个 uintptr 的全局变量，占用8个字节。
+
+**应用场景：**
+
+1. 基于map实现Set功能：
+
+	Set 是保存不重复元素的集合，Map 结构存储的是 key-value 类型，key 不允许重复，因此可以利用 Map 来实现 Set，key存储需要的数据，value 给个固定值就可以了。这时候空结构体就可以出场了，不占用空间，还可以完成占位操作。
+
+	```go
+	// 定义了一个保存 string 类型的 Set集合
+	type Set map[string]struct{}
+	 
+	// 添加一个元素
+	func (s Set) Add(key string) {
+	    s[key] = struct{}{}
+	}
+	 
+	// 移除一个元素
+	func (s Set) Remove(key string) {
+	    delete(s, key)
+	}
+	 
+	// 是否包含一个元素
+	func (s Set) Contains(key string) bool {
+	    _, ok := s[key]
+	    return ok
+	}
+	 
+	// 初始化
+	func NewSet() Set {
+	    s := make(Set)
+	    return s
+	}
+	
+	// 测试使用
+	func main() {
+	    set := NewSet()
+	    set.Add("hello")
+	    set.Add("world")
+	    fmt.Println(set.Contains("hello"))
+	 
+	    set.Remove("hello")
+	    fmt.Println(set.Contains("hello"))
+	}
+	```
+
+2. channel中信号传输：
+
+	空结构体 与 channel 可谓是一个经典组合，有时候我们只是需要一个信号来控制程序的运行逻辑，并不在意其内容如何。在下面的例子中，我们定义了两个 channel 用于接收两个任务完成的信号，当接收到任务完成的信号时，就会触发相应的动作。
+
+	```go
+	func doTask1(ch chan struct{}) {
+	    time.Sleep(time.Second)
+	    fmt.Println("do task1")
+	    ch <- struct{}{}
+	}
+	 
+	func doTask2(ch chan struct{}) {
+	    time.Sleep(time.Second * 2)
+	    fmt.Println("do task2")
+	    ch <- struct{}{}
+	}
+	 
+	func main() {
+	    ch1 := make(chan struct{})
+	    ch2 := make(chan struct{})
+	    go doTask1(ch1)
+	    go doTask2(ch2)
+	 
+	    for {
+	        select {
+	        case <-ch1:
+	            fmt.Println("task1 done")
+	        case <-ch2:
+	            fmt.Println("task2 done")
+	        case <-time.After(time.Second * 5):
+	            fmt.Println("after 5 seconds")
+	            return
+	        }
+	    }
+	}
 	```
 
 	
@@ -2899,6 +3177,37 @@ func (v 自定义类型)方法名2(参数列表)返回值列表 {
 1. 继承的价值主要在于解决代码的**复用性**和**可维护性**；接口的价值主要在于**设计好各种规范（方法）**，让其它自定义类型去实现这些方法。
 2. 接口比继承更加灵活。继承是满足`is - a`的关系，而接口只需满足`like - a`的关系。
 3. 接口在一定程度上实现代码的解耦。
+
+
+
+### 空接口与nil
+
+判断一个空接口类型的变量是否为`nil`时，只有当`type`和`value`同时为`nil`时，空接口类型变量才为`nil`。
+
+```go
+import (
+	"fmt"
+	"io"
+)
+
+func main() {
+	var a interface{}
+	var b io.Writer                              // 默认值为 nil
+	var c *io.Writer                             // 默认值为 nil
+	fmt.Printf("b: type= %T, value= %v\n", b, b) //<nil>
+	fmt.Printf("c: type= %T, value= %v\n", c, c) //<nil>
+	a = b
+	fmt.Println("a=b时, a==nil: ", a == nil) // true
+	a = c
+	fmt.Println("a=c时, a==nil:", a == nil)
+}
+/*输出：
+b: type= <nil>, value= <nil>
+c: type= *io.Writer, value= <nil>
+a=b时, a==nil:  true
+a=c时, a==nil: false
+*/
+```
 
 
 
