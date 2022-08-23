@@ -10,8 +10,9 @@ https://github.com/protocolbuffers/protobuf/releases
 
 **安装`go`专用的`protoc`的生成器：**
 
-```
-go get -u github.com/golang/protobuf/protoc-gen-go
+```shell
+go get -u github.com/golang/protobuf/protoc-gen-go(已弃用)
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 ```
 
 安装后会在`GOPATH`目录下生成可执行文件，`protobuf`的编译器插件`protoc-gen-go.exe`，执行`protoc`，命令会自动调用这个插件。
@@ -24,7 +25,7 @@ go get -u google.golang.org/grpc
 
 **安装第三方库：**
 
-```
+```shell
 go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@latest
 go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
 go install github.com/golang/protobuf/protoc-gen-go@latest
@@ -46,11 +47,19 @@ protoc --grpc-gateway_out=logtostderr=true:../(目标文件夹) *.proto
 
 
 
+## 安装问题
 
+```shell
+--go_out: protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC
+```
+
+解决方法：
 
 # 2	创建和编译proto文件：
 
-**创建proto文件**
+**创建user.proto文件**
+
+创建之前去goland的settings - > Plugins安装Protocal Buffers插件
 
 ```protobuf
 // 指定当前proto语法的版本，有proto2和proto3
@@ -70,10 +79,11 @@ message User{
 
 **编译`*.proto`文件：**
 
-```
-protoc --go_out=../service *.proto	//生成 *.pb.go
+```shell
+protoc --go_out=../service .\*.proto	//生成 *.pb.go
 //含有grpc服务主体
-protoc --go_out=plugins=grpc:../(目标文件夹) *.proto
+protoc --go_out=plugins=grpc:../(目标文件夹) .\*.proto
+protoc --go-grpc_out=../(目标文件夹) .\*.proto
 ```
 
 # 3	序列化与反序列化：
